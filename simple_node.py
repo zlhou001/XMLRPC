@@ -23,7 +23,7 @@ class Node:
         self.secret = secret
         self.known = set()
 
-    def query(self, query, hisroty=[]):
+    def query(self, query, history=[]):
         code, data = self._handle(query)
         if code == OK:
             return code, data
@@ -35,6 +35,7 @@ class Node:
 
     def hello(self, other):
         self.known.add(other)
+        for i in self.known: print(i)
         return OK
 
     def fetch(self, query, secret):
@@ -42,8 +43,9 @@ class Node:
         code, data = self.query(query)
         if code == OK:
             f = open(join(self.dirname, query), 'w')
+            #print(data)
             f.write(data)
-            f.close
+            f.close()
             return OK
         else:
             return FAIL
@@ -56,6 +58,7 @@ class Node:
     def _handle(self, query):
         dir = self.dirname
         name = join(dir, query)
+        #print(name)
         if not isfile(name): return FAIL, EMPTY
         return OK, open(name).read()
 
@@ -64,6 +67,7 @@ class Node:
             if other in history: continue
             try:
                 s = ServerProxy(other)
+                #print(other)
                 code, data = s.query(query, history)
                 if code == OK:
                     return code, data
