@@ -21,7 +21,7 @@ class AccessDenied(Fault):
     def __init__(self, message="Access denied"):
         Fault.__init__(self, ACCESS_DINIED, message)
 
-def iniside(dir, name):
+def inside(dir, name):
     dir = abspath(dir)
     name = abspath(name)
     return name.startswith(join(dir, ''))
@@ -76,7 +76,7 @@ class Node:
             try:
                 s = ServerProxy(other)
                 return s.query(query, history)
-            except Fault.f:
+            except Fault(f):
                 if f.faultCode == UNHADLED:pass
                 else: self.known.remove(other)
             except:
