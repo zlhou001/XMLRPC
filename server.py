@@ -1,6 +1,6 @@
 from xmlrpc.server import SimpleXMLRPCServer
 from xmlrpc.client import ServerProxy, Fault
-from os.path import join, isfile
+from os.path import join, isfile, abspath
 
 from urllib.parse import urlparse
 import sys
@@ -38,7 +38,7 @@ class Node:
         self.secret = secret
         self.known = set()
 
-    def query(self, query, hisroty=[]):
+    def query(self, query, history=[]):
         try:
             return self._handle(query)
         except UnhandledQuery:
@@ -53,6 +53,7 @@ class Node:
     def fetch(self, query, secret):
         if secret != self.secret: return AccessDenied
         result = self.query(query)
+        print(self.dirname)
         f = open(join(self.dirname, query), 'w')
         f.write(result)
         f.close()
@@ -66,6 +67,8 @@ class Node:
     def _handle(self, query):
         dir = self.dirname
         name = join(dir, query)
+        print(dir)
+        print(name)
         if not isfile(name): raise UnhandledQuery
         if not inside(dir, name): raise AccessDenied
         return open(name).read()
@@ -76,7 +79,7 @@ class Node:
             try:
                 s = ServerProxy(other)
                 return s.query(query, history)
-            except Fault(f):
+            except Fault as f:
                 if f.faultCode == UNHADLED:pass
                 else: self.known.remove(other)
             except:

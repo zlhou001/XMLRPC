@@ -37,7 +37,7 @@ class Client(Cmd):
     def do_fetch(self, arg):
         try:
             self.server.fetch(arg, self.secret)
-        except Fault(f):
+        except Fault as f:
             if f.faultCode != UNHANDLED: raise
             print("Couldn't find the file", arg)
 
